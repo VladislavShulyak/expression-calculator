@@ -12,8 +12,12 @@ function recursive(items, numbers, arrayExpression, i) {
         numbers.push(+x * +y);
         items.pop();
     } else if (items[items.length - 1] === '/') {
-        numbers.push(+y / +x);
-        items.pop();
+        if (x === 0) {
+            throw 'TypeError: Division by zero.'
+        } else {
+            numbers.push(+y / +x);
+            items.pop();
+        }
     } else if (items[items.length - 1] === '-') {
         numbers.push(+y - +x);
         items.pop();
@@ -21,7 +25,7 @@ function recursive(items, numbers, arrayExpression, i) {
 
     if (expressionItem[items[items.length - 1]] >= expressionItem[arrayExpression[i]]) {
         recursive(items, numbers);
-    } else if (arrayExpression[i] !== ')'){
+    } else if (arrayExpression[i] !== ')') {
         items.push(arrayExpression[i])
     }
 
@@ -31,14 +35,20 @@ function expressionCalculator(expr) {
     let result;
     let numbers = [];
     let items = [];
-    let arrayExpression = expr.split(' ');
+    let arrayExpression;
+    if (expr.length === 3) {
+        arrayExpression = expr.split('');
+    } else {
+        arrayExpression = expr.split(' ');
+    }
+
     for (let i = arrayExpression.length - 1; i >= 0; i--) {
         if (arrayExpression[i] === '') {
             arrayExpression.splice(i, 1);
         }
     }
 
-    for (let i = 0; i < arrayExpression.length  ; i++) {
+    for (let i = 0; i < arrayExpression.length; i++) {
 
         if (arrayExpression[i] !== '+' && arrayExpression[i] !== '-' && arrayExpression[i] !== '*' && arrayExpression[i] !== '/' && arrayExpression[i] !== '(' && arrayExpression[i] !== ')') {
             numbers.push(arrayExpression[i]);
@@ -48,9 +58,9 @@ function expressionCalculator(expr) {
             items.push(arrayExpression[i])
         }
 
-        if (arrayExpression.length  === (i + 1)) {
-            let x =parseFloat( numbers.pop());
-            let y =parseFloat( numbers.pop());
+        if (arrayExpression.length === (i + 1)) {
+            let x = parseFloat(numbers.pop());
+            let y = parseFloat(numbers.pop());
 
             if (items[items.length - 1] === '+') {
                 numbers.push(+x + +y);
@@ -59,8 +69,12 @@ function expressionCalculator(expr) {
                 numbers.push(+x * +y);
                 items.pop();
             } else if (items[items.length - 1] === '/') {
-                numbers.push(+y / +x);
-                items.pop();
+                if ( x === 0) {
+                    throw "TypeError: Division by zero."
+                } else {
+                    numbers.push(+y / +x);
+                    items.pop();
+                }
             } else if (items[items.length - 1] === '-') {
                 numbers.push(+x - +y);
                 items.pop();
@@ -85,15 +99,21 @@ function expressionCalculator(expr) {
                         numbers.push(+x * +y);
                         items.pop();
                     } else if (items[items.length - 1] === '/') {
-                        numbers.push(+y / +x);
-                        items.pop();
+                        if (+x === 0) {
+                            throw 'TypeError: Division by zero.'
+                        } else {
+                            numbers.push(+y / +x);
+                            items.pop();
+                        }
                     } else if (items[items.length - 1] === '-') {
                         numbers.push(+x - +y);
                         items.pop();
                     }
                     if (expressionItem[items[items.length - 1]] >= expressionItem[arrayExpression[i]] || items[items.length] === 0) {
                         recursive(items, numbers, arrayExpression, i);
-                    } else {items.push(arrayExpression[i])}
+                    } else {
+                        items.push(arrayExpression[i])
+                    }
                 }
             }
         }
@@ -118,13 +138,14 @@ function expressionCalculator(expr) {
                     items.pop();
                 }
 
-            }while (items[items.length - 1] !== '(');
+            } while (items[items.length - 1] !== '(');
             items.pop();
         }
     }
 
     result = numbers.pop();
     return result;
+
 }
 
 let expressionItem = {
