@@ -2,40 +2,12 @@ function eval() {
     return;
 }
 
-function recursive(items, numbers, arrayExpression, i) {
-    let x = numbers.pop();
-    let y = numbers.pop();
-    if (items[items.length - 1] === '+') {
-        numbers.push(+x + +y);
-        items.pop();
-    } else if (items[items.length - 1] === '*') {
-        numbers.push(+x * +y);
-        items.pop();
-    } else if (items[items.length - 1] === '/') {
-        if (x === 0) {
-            throw 'TypeError: Division by zero.'
-        } else {
-            numbers.push(+y / +x);
-            items.pop();
-        }
-    } else if (items[items.length - 1] === '-') {
-        numbers.push(+y - +x);
-        items.pop();
-    }
-
-    if (expressionItem[items[items.length - 1]] >= expressionItem[arrayExpression[i]]) {
-        recursive(items, numbers);
-    } else if (arrayExpression[i] !== ')') {
-        items.push(arrayExpression[i])
-    }
-
-}
-
 function expressionCalculator(expr) {
     let result;
-    let numbers = [];
+    let expression = [];
     let items = [];
     let arrayExpression;
+    let j = 0;
     if (expr.length === 3) {
         arrayExpression = expr.split('');
     } else {
@@ -49,110 +21,80 @@ function expressionCalculator(expr) {
     }
 
     for (let i = 0; i < arrayExpression.length; i++) {
+        if (arrayExpression[i] === ')' || arrayExpression[i] === '('){
+            j++;
+        }
+    }
+
+    if ( j % 2 !== 0) {
+        throw "ExpressionError: Brackets must be paired";
+    }
+
+    for (let i = 0; i < arrayExpression.length; i++) {
 
         if (arrayExpression[i] !== '+' && arrayExpression[i] !== '-' && arrayExpression[i] !== '*' && arrayExpression[i] !== '/' && arrayExpression[i] !== '(' && arrayExpression[i] !== ')') {
-            numbers.push(arrayExpression[i]);
+            expression.push(arrayExpression[i]);
         }
 
         if (arrayExpression[i] === '(') {
             items.push(arrayExpression[i])
         }
 
-        if (arrayExpression.length === (i + 1)) {
-            let x = parseFloat(numbers.pop());
-            let y = parseFloat(numbers.pop());
-
-            if (items[items.length - 1] === '+') {
-                numbers.push(+x + +y);
-                items.pop();
-            } else if (items[items.length - 1] === '*') {
-                numbers.push(+x * +y);
-                items.pop();
-            } else if (items[items.length - 1] === '/') {
-                if ( x === 0) {
-                    throw "TypeError: Division by zero."
-                } else {
-                    numbers.push(+y / +x);
-                    items.pop();
-                }
-            } else if (items[items.length - 1] === '-') {
-                numbers.push(+x - +y);
-                items.pop();
-            }
-        }
-
         if (arrayExpression[i] === '*' || arrayExpression[i] === '+' || arrayExpression[i] === '-' || arrayExpression[i] === '/') {
-            if (items.length === 0) {
-                items.push(arrayExpression[i]);
-            } else {
-                if (expressionItem[items[items.length - 1]] < expressionItem[arrayExpression[i]] || items[items.length - 1] === '(') {
-                    items.push(arrayExpression[i])
+            while (items.length !== 0) {
+                if (expressionItem[items[items.length - 1]] >= expressionItem[arrayExpression[i]]) {
+                    expression.push(items.pop())
                 } else {
-
-                    let x = numbers.pop();
-                    let y = numbers.pop();
-
-                    if (items[items.length - 1] === '+') {
-                        numbers.push(+x + +y);
-                        items.pop();
-                    } else if (items[items.length - 1] === '*') {
-                        numbers.push(+x * +y);
-                        items.pop();
-                    } else if (items[items.length - 1] === '/') {
-                        if (+x === 0) {
-                            throw 'TypeError: Division by zero.'
-                        } else {
-                            numbers.push(+y / +x);
-                            items.pop();
-                        }
-                    } else if (items[items.length - 1] === '-') {
-                        numbers.push(+x - +y);
-                        items.pop();
-                    }
-                    if (expressionItem[items[items.length - 1]] >= expressionItem[arrayExpression[i]] || items[items.length] === 0) {
-                        recursive(items, numbers, arrayExpression, i);
-                    } else {
-                        items.push(arrayExpression[i])
-                    }
+                    break
                 }
             }
+            items.push(arrayExpression[i]);
         }
-
         if (arrayExpression[i] === ')') {
-            // recursive(items, numbers, arrayExpression, i)
-
-            do {
-                let x = numbers.pop();
-                let y = numbers.pop();
-                if (items[items.length - 1] === '+') {
-                    numbers.push(+x + +y);
-                    items.pop();
-                } else if (items[items.length - 1] === '*') {
-                    numbers.push(+x * +y);
-                    items.pop();
-                } else if (items[items.length - 1] === '/') {
-                    numbers.push(+y / +x);
-                    items.pop();
-                } else if (items[items.length - 1] === '-') {
-                    numbers.push(+y - +x);
-                    items.pop();
-                }
-
-            } while (items[items.length - 1] !== '(');
+            while (items[items.length - 1] !== '(') {
+                expression.push(items.pop());
+            }
             items.pop();
         }
     }
+    while (items.length > 0) {
+        expression.push(items.pop())
+    }
 
-    result = numbers.pop();
-    return result;
+    for (let i = 0; i < expression.length; i++) {
+        if (expression[i] !== '+' && expression[i] !== '-' && expression[i] !== '*' && expression[i] !== '/' && expression[i] !== '(' && expression[i] !== ')') {
+            items.push(expression[i]);
+        } else if ((expression[i] === '*' || expression[i] === '+' || expression[i] === '-' || expression[i] === '/' || expression[i] === '(' || expression[i] === ')')) {
+
+            let x = items.pop();
+            let y = items.pop();
+            if (expression[i] === '+') {
+                result = +x + +y;
+            } else if (expression[i] === '*') {
+                result = +x * +y;
+            } else if (expression[i] === '/') {
+                if (+x === 0) {
+                    throw 'TypeError: Division by zero.'
+                } else {
+                    result = +y / +x;
+                }
+            } else if (expression[i] === '-') {
+                result = +y - +x;
+            }
+            items.push(result);
+        }
+    }
+    return (Math.round(items * 10000) / 10000)
 
 }
 
 let expressionItem = {
-    '+': '1',
-    '-': '1',
-    '*': '2',
-    '/': '2'
+    '+': '2',
+    '-': '2',
+    '*': '3',
+    '/': '3',
+    '(': '1',
+    ')': '-1'
 };
 
 
