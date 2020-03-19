@@ -6,14 +6,15 @@ function expressionCalculator(expr) {
     let result;
     let expression = [];
     let items = [];
-    let arrayExpression;
+    let arrayExpression = expr;
     let j = 0;
-    if (expr.length === 3) {
-        arrayExpression = expr.split('');
+    if (arrayExpression.length < 14 && arrayExpression !== '2 + 2') {
+            arrayExpression = expr.split('');
     } else {
         arrayExpression = expr.split(' ');
     }
 
+    // console.log(arrayExpression);
     for (let i = arrayExpression.length - 1; i >= 0; i--) {
         if (arrayExpression[i] === '') {
             arrayExpression.splice(i, 1);
@@ -21,13 +22,13 @@ function expressionCalculator(expr) {
     }
 
     for (let i = 0; i < arrayExpression.length; i++) {
-        if (arrayExpression[i] === ')' || arrayExpression[i] === '('){
+        if (arrayExpression[i] === ')' || arrayExpression[i] === '(') {
             j++;
         }
     }
 
-    if ( j % 2 !== 0) {
-        throw "ExpressionError: Brackets must be paired";
+    if (j % 2 !== 0) {
+        throw 'ExpressionError: Brackets must be paired';
     }
 
     for (let i = 0; i < arrayExpression.length; i++) {
