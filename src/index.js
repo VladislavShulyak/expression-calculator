@@ -8,6 +8,7 @@ function expressionCalculator(expr) {
     let items = [];
     let arrayExpression = expr;
     let j = 0;
+    let k = 0;
     if (arrayExpression.length < 14 && arrayExpression !== '2 + 2') {
             arrayExpression = expr.split('');
     } else {
@@ -22,12 +23,18 @@ function expressionCalculator(expr) {
     }
 
     for (let i = 0; i < arrayExpression.length; i++) {
-        if (arrayExpression[i] === ')' || arrayExpression[i] === '(') {
+        if (arrayExpression[i] === ')') {
             j++;
         }
     }
 
-    if (j % 2 !== 0) {
+    for (let i = 0; i < arrayExpression.length; i++) {
+        if (arrayExpression[i] === '(' ) {
+            k++;
+        }
+    }
+
+    if (k !== j) {
         throw 'ExpressionError: Brackets must be paired';
     }
 
